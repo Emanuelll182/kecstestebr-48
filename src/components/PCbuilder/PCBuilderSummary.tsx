@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { MessageCircle, Trash2, Edit } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuthGuard';
-import { SelectedComponent } from '@/pages/PCBuilderPage';
+import type { SelectedComponent } from '@/pages/PCBuilderPage';
 
 const STEP_NAMES: { [key: string]: string } = {
   'gabinetes': 'Gabinete',
@@ -74,7 +74,7 @@ const PCBuilderSummary = ({
     message += `💰 *TOTAL: R$ ${total.toFixed(2)}*\n\n`;
     message += `Gostaria de mais informações sobre esta configuração!`;
 
-    const whatsappUrl = `https://wa.me/5511999999999?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = `https://wa.me/558534833373?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
 

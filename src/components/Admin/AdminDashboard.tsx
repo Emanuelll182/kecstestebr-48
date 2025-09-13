@@ -1,7 +1,7 @@
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { LogOut, Package, Image, Tags, Users, Star, Settings } from 'lucide-react';
+import { LogOut, Package, Image, Tags, Users, Star, Settings, Computer } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import ProductManagement from './ProductManagement';
@@ -10,6 +10,7 @@ import CategoryManagement from './CategoryManagement';
 import ClientManagement from './ClientManagement';
 import FeaturedProductsManagement from './FeaturedProductsManagement';
 import StoreCredentialsManagement from './StoreCredentialsManagement';
+import ReadyPcManagement from './ReadyPcManagement';
 import StoreSettingsManagement from './StoreSettingsManagement';
 
 interface AdminDashboardProps {
@@ -64,7 +65,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBack }) => {
 
       <div className="container mx-auto p-6">
         <Tabs defaultValue="products" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className="grid w-full grid-cols-7">
             <TabsTrigger value="products" className="flex items-center gap-2">
               <Package className="h-4 w-4" />
               Produtos
@@ -72,6 +73,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBack }) => {
             <TabsTrigger value="featured" className="flex items-center gap-2">
               <Star className="h-4 w-4" />
               Destaques
+            </TabsTrigger>
+            <TabsTrigger value="ready-pcs" className="flex items-center gap-2">
+              <Computer className="h-4 w-4" />
+              PCs Prontos
             </TabsTrigger>
             <TabsTrigger value="banners" className="flex items-center gap-2">
               <Image className="h-4 w-4" />
@@ -85,13 +90,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBack }) => {
               <Users className="h-4 w-4" />
               Clientes
             </TabsTrigger>
+            
             <TabsTrigger value="credentials" className="flex items-center gap-2">
               <Settings className="h-4 w-4" />
               Credenciais
-            </TabsTrigger>
-            <TabsTrigger value="settings" className="flex items-center gap-2">
-              <Settings className="h-4 w-4" />
-              Configurações
             </TabsTrigger>
           </TabsList>
 
@@ -101,6 +103,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBack }) => {
 
           <TabsContent value="featured">
             <FeaturedProductsManagement />
+          </TabsContent>
+
+          <TabsContent value="ready-pcs">
+            <ReadyPcManagement />
           </TabsContent>
 
           <TabsContent value="banners">
@@ -118,8 +124,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBack }) => {
           <TabsContent value="credentials">
             <StoreCredentialsManagement />
           </TabsContent>
-
-          <TabsContent value="settings">
+          
+          <TabsContent value="credentials">
             <StoreSettingsManagement />
           </TabsContent>
 

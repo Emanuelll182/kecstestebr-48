@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Check, MessageCircle } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuthGuard';
-import { SelectedComponent } from '@/pages/PCBuilderPage';
+// Remove this import, and define the type below
 
 interface Product {
   id: string;
@@ -16,6 +16,11 @@ interface Product {
   image_url: string | null;
   description: string | null;
   sku: string | null;
+}
+
+interface SelectedComponent {
+  id: string;
+  // Add other fields if needed
 }
 
 interface PCComponentSelectorProps {

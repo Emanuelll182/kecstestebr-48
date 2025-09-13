@@ -6,7 +6,6 @@ import { Badge } from "@/components/ui/badge";
 import { Star, Heart, Eye, MessageCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import { supabasePublic as supabase } from '@/integrations/supabase/publicClient';
 import { useAuth } from '@/contexts/AuthContext';
-import AddToCartButton from '@/components/Product/AddToCartButton';
 
 interface Product {
   id: string;
@@ -23,7 +22,7 @@ const FeaturedProducts = () => {
   const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [visibleProducts, setVisibleProducts] = useState(4);
+  const [visibleProducts, setVisibleProducts] = useState(5);
   const { profile } = useAuth();
 
   useEffect(() => {
@@ -89,7 +88,7 @@ const FeaturedProducts = () => {
   const hasMoreProducts = visibleProducts < products.length;
 
   const loadMoreProducts = () => {
-    setVisibleProducts(prev => Math.min(prev + 4, products.length));
+    setVisibleProducts(prev => Math.min(prev + 5, products.length));
   };
 
   if (loading) {
@@ -205,23 +204,14 @@ const FeaturedProducts = () => {
                     )}
                   </div>
 
-                  <div className="space-y-1">
-                    <AddToCartButton 
-                      product={product}
-                      variant="default"
-                      size="sm"
-                      className="w-full h-7 sm:h-10 text-xs sm:text-sm"
-                    />
-                    <Button 
-                      variant="outline"
-                      className="bg-green-500 hover:bg-green-600 text-white border-green-500 w-full h-7 sm:h-10 text-xs sm:text-sm"
-                      onClick={() => handleWhatsAppContact(product)}
-                    >
-                      <MessageCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                      <span className="hidden sm:inline">Consultar</span>
-                      <span className="sm:hidden">Contato</span>
-                    </Button>
-                  </div>
+                  <Button 
+                    className="bg-gradient-primary hover:opacity-90 font-medium w-full h-7 sm:h-10 text-xs sm:text-sm"
+                    onClick={() => handleWhatsAppContact(product)}
+                  >
+                    <MessageCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">Consultar</span>
+                    <span className="sm:hidden">Comprar</span>
+                  </Button>
                 </div>
               </CardContent>
             </Card>

@@ -1,4 +1,4 @@
-import { Search, User, LogOut, MessageCircle, Tags, MapPin } from "lucide-react";
+import { Search, User, LogOut, MessageCircle, Tags, MapPin, PcCase } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -147,16 +147,6 @@ const Header = ({
               alt="KECINFORSTORE Logo"
               className="h-auto sm:h-24 w-70 animate-fade-in"
             />
-            {/* Monte seu PC Button */}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => window.location.href = '/monte-seu-pc'}
-              className="hidden md:flex items-center gap-2 text-primary hover:text-primary/80 hover:bg-primary/10"
-            >
-              <span>🖥️</span>
-              Monte seu PC
-            </Button>
           </div>
 
           {/* Search and Filters */}
@@ -210,6 +200,18 @@ const Header = ({
 
           {/* User Info and Actions */}
           <div className="flex items-center gap-1 sm:gap-2">
+
+            {/* Monte seu PC Button */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => window.location.href = '/monte-seu-pc'}
+              className="bg-blue-500 hover:bg-blue-600 text-white border-blue-500 w-8 h-8 sm:w-auto sm:h-auto p-1 sm:px-3 sm:py-2"
+            >
+              <PcCase className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Monte seu PC</span>
+            </Button>
+          
             {/* WhatsApp Button */}
             <Button
               variant="outline"
