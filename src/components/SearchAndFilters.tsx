@@ -64,10 +64,6 @@ const SearchAndFilters = ({
               console.log('🔍 SearchAndFilters input changed:', e.target.value);
               onSearchChange(e.target.value);
             }}
-            onInput={(e) => {
-              console.log('🔍 SearchAndFilters input event:', e.currentTarget.value);
-              onSearchChange(e.currentTarget.value);
-            }}
             className="pl-10 h-12 border-2 touch-manipulation"
             autoComplete="off"
             autoCorrect="off"
