@@ -201,17 +201,7 @@ const Header = ({
           {/* User Info and Actions */}
           <div className="flex items-center gap-1 sm:gap-2">
 
-            {/* Monte seu PC Button */}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => window.location.href = '/monte-seu-pc'}
-              className="bg-blue-500 hover:bg-blue-600 text-white border-blue-500 w-8 h-8 sm:w-auto sm:h-auto p-1 sm:px-3 sm:py-2"
-            >
-              <PcCase className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
-              <span className="hidden sm:inline">Monte seu PC</span>
-            </Button>
-          
+            
             {/* WhatsApp Button */}
             <Button
               variant="outline"
