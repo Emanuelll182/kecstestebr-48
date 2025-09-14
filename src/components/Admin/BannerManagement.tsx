@@ -10,18 +10,26 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { ImageUpload } from '@/components/ui/image-upload';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface Banner {
   id: string;
   title: string;
   image_url: string;
-  link_url?: string;
+  link_url?: string | null;
   is_active: boolean;
   order_position: number;
+  category_id?: string | null;
+}
+
+interface Category {
+  id: string;
+  name: string;
 }
 
 const BannerManagement = () => {
   const [banners, setBanners] = useState<Banner[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [editingBanner, setEditingBanner] = useState<Banner | null>(null);
   const [loading, setLoading] = useState(false);
@@ -30,13 +38,15 @@ const BannerManagement = () => {
     image_url: '',
     link_url: '',
     is_active: true,
-    order_position: 0
+    order_position: 0,
+    category_id: ''
   });
 
   const { toast } = useToast();
 
   useEffect(() => {
     fetchBanners();
+    fetchCategories();
   }, []);
 
   const fetchBanners = async () => {
@@ -53,13 +63,28 @@ const BannerManagement = () => {
     }
   };
 
+  const fetchCategories = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('categories')
+        .select('*')
+        .order('name', { ascending: true });
+
+      if (error) throw error;
+      setCategories(data || []);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
+  };
+
   const resetForm = () => {
     setFormData({
       title: '',
       image_url: '',
       link_url: '',
       is_active: true,
-      order_position: banners.length
+      order_position: banners.length,
+      category_id: ''
     });
     setEditingBanner(null);
   };
@@ -71,7 +96,8 @@ const BannerManagement = () => {
       image_url: banner.image_url,
       link_url: banner.link_url || '',
       is_active: banner.is_active,
-      order_position: banner.order_position
+      order_position: banner.order_position,
+      category_id: banner.category_id || ''
     });
     setIsOpen(true);
   };
@@ -83,10 +109,11 @@ const BannerManagement = () => {
     try {
       const bannerData = {
         title: formData.title,
-        image_url: formData.image_url,
-        link_url: formData.link_url || null,
+        image_url: formData.image_url || null,
+        link_url: formData.link_url?.trim() !== '' ? formData.link_url : null,
         is_active: formData.is_active,
-        order_position: formData.order_position
+        order_position: formData.order_position,
+        category_id: formData.category_id || null
       };
 
       let error;
@@ -156,7 +183,6 @@ const BannerManagement = () => {
         .eq('id', id);
 
       if (error) throw error;
-
       fetchBanners();
     } catch (error: any) {
       toast({
@@ -220,6 +246,23 @@ const BannerManagement = () => {
                 </div>
 
                 <div>
+                  <Label htmlFor="category_id">Categoria</Label>
+                  <Select
+                    value={formData.category_id}
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, category_id: value }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione uma categoria" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories.map((cat) => (
+                        <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
                   <Label htmlFor="order_position">Posição</Label>
                   <Input
                     id="order_position"
@@ -257,6 +300,7 @@ const BannerManagement = () => {
           <TableHeader>
             <TableRow>
               <TableHead>Título</TableHead>
+              <TableHead>Categoria</TableHead>
               <TableHead>Posição</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Ações</TableHead>
@@ -266,6 +310,9 @@ const BannerManagement = () => {
             {banners.map((banner) => (
               <TableRow key={banner.id}>
                 <TableCell className="font-medium">{banner.title}</TableCell>
+                <TableCell>
+                  {categories.find(c => c.id === banner.category_id)?.name || '—'}
+                </TableCell>
                 <TableCell>{banner.order_position}</TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
