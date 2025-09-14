@@ -174,7 +174,7 @@ const BannerManagement = () => {
           <div>
             <CardTitle>Gerenciar Banners</CardTitle>
             <p className="text-sm text-muted-foreground mt-1">
-              Use imagens com proporção 16:9 (ex: 1920x1080, 1600x900, 1280x720)
+              Use imagens com proporção 4:1 (ex: 1600x400)
             </p>
           </div>
           <Dialog open={isOpen} onOpenChange={setIsOpen}>

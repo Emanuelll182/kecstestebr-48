@@ -2,7 +2,7 @@ import { Shield, CreditCard, Users } from 'lucide-react';
 
 const TrustBadges = () => {
   return (
-    <div className="bg-gradient-primary text-primary-foreground py-5 mb-8">
+    <div className="bg-gradient-primary text-primary-foreground py-2 mb-0">
       <div className="container mx-auto px-1">
         {/* 2 colunas no celular, 4 no desktop */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
