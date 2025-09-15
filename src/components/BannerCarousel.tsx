@@ -76,7 +76,7 @@ const BannerCarousel = () => {
 
   return (
     <div className="mb-">
-      <Carousel plugins={[Autoplay({ delay: 4000 })]} className="w-full">
+      <Carousel plugins={[Autoplay({ delay: 40000 })]} className="w-full">
         <CarouselContent>
           {banners.map((banner) => (
             <CarouselItem key={banner.id}>
