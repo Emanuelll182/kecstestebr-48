@@ -142,11 +142,13 @@ const Header = ({
         <div className="flex items-center justify-between gap-1">
           {/* Logo */}
           <div className="flex items-center">
-            <img
-              src={Fotokec}
-              alt="KECINFORSTORE Logo"
-              className="h-auto sm:h-24 w-70 animate-fade-in"
-            />
+            <a href="https://kecs.com.br" className="flex items-center">
+              <img
+                src={Fotokec}
+                alt="KECINFORSTORE Logo"
+                className="h-auto sm:h-24 w-70 animate-fade-in"
+              />
+            </a>
           </div>
 
           {/* Search and Filters */}
