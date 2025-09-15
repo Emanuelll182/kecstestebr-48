@@ -210,7 +210,7 @@ const FeaturedProducts = () => {
                   >
                     <MessageCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                     <span className="hidden sm:inline">Consultar</span>
-                    <span className="sm:hidden">Comprar</span>
+                    <span className="sm:hidden">Consultar</span>
                   </Button>
                 </div>
               </CardContent>

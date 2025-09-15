@@ -109,7 +109,7 @@ const Header = ({
                 rel="noopener noreferrer"
                 className="flex items-center gap-1 hover:opacity-80 transition-opacity"
               >
-                <MapPin className="h-3 w-3" />
+                <MapPin className="h-5 w-5" />
                 <span className="hidden sm:inline">Endereço da Loja</span>
               </a>
 
@@ -118,17 +118,17 @@ const Header = ({
                 href={storeCredentials?.instagram_url || "https://instagram.com/kecinforstore"} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 text-background/70 hover:text-background hover:bg-background/10 w-8 h-8"
+                className="flex items-center gap-1 hover:opacity-80 transition-opacity"
               >
                 <SiInstagram className="h-4 w-4" />
               </a>
 
               {/* Botão Facebook */}
               <a 
-                href={storeCredentials?.facebook_url || "https://facebook.com/kecinforstore"} 
+                href={storeCredentials?.facebook_url || "https://www.facebook.com/KECvendas/?locale=pt_BR"} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 text-background/70 hover:text-background hover:bg-background/10 w-8 h-8"
+                className="flex items-center gap-1 hover:opacity-80 transition-opacity"
               >
                 <SiFacebook className="h-4 w-4" />
               </a>
