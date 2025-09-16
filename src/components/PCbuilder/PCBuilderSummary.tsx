@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { MessageCircle, Trash2, Edit } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuthGuard';
-import type { SelectedComponent } from '@/pages/PCBuilderPage';
+import SelectedComponent from '@/pages/PCBuilderPage';
 
 const STEP_NAMES: { [key: string]: string } = {
   'gabinetes': 'Gabinete',
