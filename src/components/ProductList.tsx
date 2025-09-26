@@ -5,8 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { MessageCircle, ShoppingCart, Eye } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
-import AddToCartButton from '@/components/Product/AddToCartButton';
+import { useAuth } from '@/hooks/useAuth';
 
 interface Product {
   id: string;
@@ -27,6 +26,7 @@ const ProductList = ({ searchTerm, selectedCategory }: ProductListProps) => {
   const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [expandedDescriptions, setExpandedDescriptions] = useState<Set<string>>(new Set());
   const { profile } = useAuth();
 
   useEffect(() => {
@@ -116,6 +116,18 @@ const ProductList = ({ searchTerm, selectedCategory }: ProductListProps) => {
     window.open(whatsappUrl, '_blank');
   };
 
+  const toggleDescription = (productId: string) => {
+    setExpandedDescriptions(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(productId)) {
+        newSet.delete(productId);
+      } else {
+        newSet.add(productId);
+      }
+      return newSet;
+    });
+  };
+
   const handleProductClick = (product: Product) => {
     navigate(`/produto/${product.id}`);
   };
@@ -201,48 +213,42 @@ const ProductList = ({ searchTerm, selectedCategory }: ProductListProps) => {
                     </h3>
                     
                     {product.description && (
-                  <div className="text-xs text-gray-600 mb-2 sm:mb-4 hidden sm:block">
-                    <p className={expandedDescriptions.has(product.id) ? 'sm:line-clamp-none' : 'line-clamp-1 sm:line-clamp-2'}>
-                      {product.description}
-                    </p>
-                    {product.description.length > 80 && (
-                      <button
-                        onClick={() => toggleDescription(product.id)}
-                        className="text-blue-600 hover:text-blue-800 text-xs font-medium mt-1 transition-colors hidden sm:inline"
-                      >
-                        {expandedDescriptions.has(product.id) ? 'ver menos...' : 'ver mais...'}
-                      </button>
+                      <div className="text-sm text-gray-600 mb-3">
+                        <p className={expandedDescriptions.has(product.id) ? '' : 'line-clamp-2'}>
+                          {product.description}
+                        </p>
+                        {product.description.length > 120 && (
+                          <button
+                            onClick={() => toggleDescription(product.id)}
+                            className="text-blue-600 hover:text-blue-800 text-sm font-medium mt-1 transition-colors"
+                          >
+                            {expandedDescriptions.has(product.id) ? 'ver menos...' : 'ver mais...'}
+                          </button>
+                        )}
+                      </div>
                     )}
                   </div>
 
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                      <div>
-                        <div className="text-xl md:text-2xl font-bold text-blue-600">
-                          R$ {(profile?.setor === 'revenda' ? product.price_revenda : product.price_varejo)?.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) || '0,00'}
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div>
+                      <div className="text-xl md:text-2xl font-bold text-blue-600">
+                        R$ {(profile?.setor === 'revenda' ? product.price_revenda : product.price_varejo)?.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) || '0,00'}
+                      </div>
+                      {profile?.setor === 'revenda' && (
+                        <div className="text-xs text-green-600 font-medium">
+                          Preço Revenda
                         </div>
-                        {profile?.setor === 'revenda' && (
-                          <div className="text-xs text-green-600 font-medium">
-                            Preço Revenda
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="flex gap-2">
-                        <AddToCartButton 
-                          product={product}
-                          variant="default"
-                          className="flex-1 sm:flex-none"
-                        />
-                        <Button 
-                          variant="outline"
-                          className="bg-green-500 hover:bg-green-600 text-white border-green-500 px-6 h-10 md:h-12 flex-1 sm:flex-none"
-                          onClick={() => handleWhatsAppContact(product)}
-                        >
-                          <MessageCircle className="h-4 w-4 mr-2" />
-                          Consultar
-                        </Button>
-                      </div>
+                      )}
                     </div>
+
+                    <Button 
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-6 h-10 md:h-12 w-full sm:w-auto"
+                      onClick={() => handleWhatsAppContact(product)}
+                    >
+                      <ShoppingCart className="h-4 w-4 mr-2" />
+                      Consultar
+                    </Button>
+                  </div>
                 </CardContent>
               </div>
             </Card>
@@ -283,9 +289,19 @@ const ProductList = ({ searchTerm, selectedCategory }: ProductListProps) => {
                 </h3>
                 
                 {product.description && (
-                  <p className="text-xs text-gray-600 mb-2 sm:mb-4 line-clamp-1 sm:line-clamp-2 hidden sm:block">
-                    {product.description}
-                  </p>
+                  <div className="text-xs text-gray-600 mb-2 sm:mb-4 hidden sm:block">
+                    <p className={expandedDescriptions.has(product.id) ? 'sm:line-clamp-none' : 'line-clamp-1 sm:line-clamp-2'}>
+                      {product.description}
+                    </p>
+                    {product.description.length > 80 && (
+                      <button
+                        onClick={() => toggleDescription(product.id)}
+                        className="text-blue-600 hover:text-blue-800 text-xs font-medium mt-1 transition-colors hidden sm:inline"
+                      >
+                        {expandedDescriptions.has(product.id) ? 'ver menos...' : 'ver mais...'}
+                      </button>
+                    )}
+                  </div>
                 )}
 
                 <div className="mb-2 sm:mb-4">
@@ -299,23 +315,14 @@ const ProductList = ({ searchTerm, selectedCategory }: ProductListProps) => {
                   )}
                 </div>
 
-                <div className="space-y-2">
-                  <AddToCartButton 
-                    product={product}
-                    variant="default"
-                    size="sm"
-                    className="w-full h-7 sm:h-10 md:h-12 text-xs sm:text-sm md:text-base"
-                  />
-                  <Button 
-                    variant="outline"
-                    className="w-full bg-green-500 hover:bg-green-600 text-white border-green-500 h-7 sm:h-10 md:h-12 text-xs sm:text-sm md:text-base"
-                    onClick={() => handleWhatsAppContact(product)}
-                  >
-                    <MessageCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                    <span className="hidden sm:inline">Consultar</span>
-                    <span className="sm:hidden">Contato</span>
-                  </Button>
-                </div>
+                <Button 
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white h-7 sm:h-10 md:h-12 text-xs sm:text-sm md:text-base"
+                  onClick={() => handleWhatsAppContact(product)}
+                >
+                  <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                  <span className="hidden sm:inline">Consultar</span>
+                  <span className="sm:hidden">Comprar</span>
+                </Button>
               </CardContent>
             </Card>
           ))}
