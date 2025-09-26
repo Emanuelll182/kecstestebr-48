@@ -201,11 +201,20 @@ const ProductList = ({ searchTerm, selectedCategory }: ProductListProps) => {
                     </h3>
                     
                     {product.description && (
-                      <p className="text-sm text-gray-600 mb-3 line-clamp-2">
-                        {product.description}
-                      </p>
+                  <div className="text-xs text-gray-600 mb-2 sm:mb-4 hidden sm:block">
+                    <p className={expandedDescriptions.has(product.id) ? 'sm:line-clamp-none' : 'line-clamp-1 sm:line-clamp-2'}>
+                      {product.description}
+                    </p>
+                    {product.description.length > 80 && (
+                      <button
+                        onClick={() => toggleDescription(product.id)}
+                        className="text-blue-600 hover:text-blue-800 text-xs font-medium mt-1 transition-colors hidden sm:inline"
+                      >
+                        {expandedDescriptions.has(product.id) ? 'ver menos...' : 'ver mais...'}
+                      </button>
                     )}
                   </div>
+                )}
 
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                       <div>
