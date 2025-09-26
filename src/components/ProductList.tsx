@@ -214,7 +214,6 @@ const ProductList = ({ searchTerm, selectedCategory }: ProductListProps) => {
                       </button>
                     )}
                   </div>
-                )}
 
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                       <div>
