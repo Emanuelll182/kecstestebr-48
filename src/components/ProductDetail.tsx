@@ -1,11 +1,9 @@
-import { useAuth } from '@/hooks/useAuthGuard';
-import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent } from '@/components/ui/card';
+import { useState } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { MessageCircle, ShoppingCart, Eye, ChevronDown } from 'lucide-react';
-import ProductDetail from '@/components/ProductDetail';
+import { MessageCircle, ShoppingCart, ZoomIn, ZoomOut, X } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 import { useStoreCredentials } from '@/hooks/useStoreCredentials';
 
 interface Product {
@@ -21,238 +19,212 @@ interface Product {
     slug: string;
   };
 }
-
-interface ProductListProps {
-  searchTerm?: string;
-  selectedCategory?: string;
+interface ProductDetailProps {
+  product: Product | null;
+  isOpen: boolean;
+  onClose: () => void;
 }
 
-const ProductList = ({ searchTerm, selectedCategory }: ProductListProps) => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [isDetailOpen, setIsDetailOpen] = useState(false);
-  const [expandedDescriptions, setExpandedDescriptions] = useState<Set<string>>(new Set());
+const ProductDetail = ({ product, isOpen, onClose }: ProductDetailProps) => {
+  const [imageZoom, setImageZoom] = useState(false);
+  const [zoomLevel, setZoomLevel] = useState(1);
   const { profile } = useAuth();
   const { redirectToWhatsApp, currentSector } = useStoreCredentials();
 
-  const toggleDescription = (productId: string) => {
-    setExpandedDescriptions(prev => {
-      const next = new Set(prev);
-      if (next.has(productId)) {
-        next.delete(productId);
-      } else {
-        next.add(productId);
-      }
-      return next;
-    });
-  };
+  if (!product) return null;
 
-  useEffect(() => {
-    fetchProducts();
-  }, [searchTerm, selectedCategory]);
-
-  const fetchProducts = async () => {
-    console.log('🛍️ Starting product fetch...');
-    console.log('🔍 Filters - Search:', searchTerm, 'Category:', selectedCategory);
-    setLoading(true);
-    
-    try {
-      let query = supabase
-        .from('products')
-        .select(`
-          *,
-          categories!inner(name, slug)
-        `)
-        .order('created_at', { ascending: false });
-
-      // Apply category filter
-      if (selectedCategory && selectedCategory !== 'all') {
-        query = query.eq('categories.slug', selectedCategory);
-      }
-
-      // Apply search filter
-      if (searchTerm && searchTerm.trim() !== '') {
-        query = query.ilike('name', `%${searchTerm.trim()}%`);
-      }
-
-      const { data, error } = await query;
-
-      if (error) {
-        console.error('❌ Products error:', error.message);
-        // If join fails, try simple query without categories
-        console.log('🔄 Retrying with simple query...');
-        const { data: simpleData, error: simpleError } = await supabase
-          .from('products')
-          .select('*')
-          .order('created_at', { ascending: false });
-          
-        if (simpleError) {
-          console.error('❌ Simple query also failed:', simpleError.message);
-          setProducts([]);
-        } else {
-          console.log('✅ Products loaded via simple query:', simpleData?.length || 0);
-          setProducts(simpleData || []);
-        }
-      } else {
-        console.log('✅ Products loaded:', data?.length || 0);
-        console.log('📊 Applied filters - Category:', selectedCategory, 'Search:', searchTerm);
-        setProducts(data || []);
-      }
-    } catch (error) {
-      console.error('❌ Fetch error:', error);
-      // Fallback to simple query
-      try {
-        const { data: fallbackData } = await supabase
-          .from('products')
-          .select('*')
-          .order('created_at', { ascending: false });
-        setProducts(fallbackData || []);
-      } catch (fallbackError) {
-        console.error('❌ Fallback error:', fallbackError);
-        setProducts([]);
-      }
+  const getPrice = () => {
+    if (!profile || profile.setor === 'varejo') {
+      return product.price_varejo;
     }
-    
-    console.log('🏁 Product fetch complete');
-    setLoading(false);
+    return product.price_revenda;
   };
 
-  const handleWhatsAppContact = (product: Product) => {
+  const getPriceLabel = () => {
+    if (!profile || profile.setor === 'varejo') {
+      return 'Varejo';
+    }
+    return 'Revenda';
+  };
+
+  const handleWhatsAppContact = () => {
     const message = `Olá! Gostaria de saber mais sobre o produto: ${product.name} (SKU: ${product.sku || 'N/A'})`;
     redirectToWhatsApp(message);
   };
 
-  const handleProductClick = (product: Product) => {
-    setSelectedProduct(product);
-    setIsDetailOpen(true);
+  const handleZoomIn = () => {
+    setZoomLevel(prev => Math.min(prev + 0.5, 3));
   };
 
-  const closeProductDetail = () => {
-    setIsDetailOpen(false);
-    setSelectedProduct(null);
+  const handleZoomOut = () => {
+    setZoomLevel(prev => Math.max(prev - 0.5, 1));
   };
 
-  if (loading) {
-    return (
-      <div className="space-y-6">
-        <h2 className="text-2xl font-bold">Carregando produtos...</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {[...Array(8)].map((_, i) => (
-            <Card key={i} className="overflow-hidden">
-              <div className="w-full h-48 bg-gray-200 animate-pulse" />
-              <CardContent className="p-4">
-                <div className="h-4 bg-gray-200 animate-pulse rounded mb-2" />
-                <div className="h-6 bg-gray-200 animate-pulse rounded" />
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  console.log('Rendering products:', products.length);
+  const toggleImageZoom = () => {
+    setImageZoom(!imageZoom);
+    if (!imageZoom) {
+      setZoomLevel(1);
+    }
+  };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-foreground">
-          Produtos ({products.length})
-        </h2>
-        <Button
-          onClick={() => handleWhatsAppContact(products[0])}
-          className="bg-green-500 hover:bg-green-600 text-white"
-        >
-          <MessageCircle className="h-4 w-4 mr-2" />
-          WhatsApp Vendas
-        </Button>
-      </div>
+    <>
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-foreground">
+              {product.name}
+            </DialogTitle>
+          </DialogHeader>
 
-      {products.length === 0 ? (
-        <div className="text-center py-12">
-          <h3 className="text-lg font-semibold mb-2">Nenhum produto encontrado</h3>
-          <p className="text-gray-600">Verifique sua conexão ou tente novamente.</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-          {products.map((product) => (
-            <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow group">
-              <div className="relative">
-                <img 
-                  src={product.image_url || 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=400&fit=crop'} 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Image Section */}
+            <div className="space-y-4">
+              <div className="relative bg-muted rounded-lg overflow-hidden">
+                <img
+                  src={product.image_url || 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=600&h=600&fit=crop'}
                   alt={product.name}
-                  className="w-full h-32 md:h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                  className="w-full h-80 object-cover cursor-zoom-in"
+                  onClick={toggleImageZoom}
                 />
-                {product.sku && (
-                  <Badge className="absolute top-2 right-2 bg-blue-500 text-white text-xs">
-                    {product.sku}
+                <div className="absolute top-3 right-3 flex gap-2">
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    className="bg-white/80 hover:bg-white"
+                    onClick={toggleImageZoom}
+                  >
+                    <ZoomIn className="h-4 w-4" />
+                  </Button>
+                </div>
+                {product.categories && (
+                  <Badge className="absolute top-3 left-3 bg-primary text-primary-foreground">
+                    {product.categories.name}
                   </Badge>
                 )}
-                <Button
-                  size="icon"
-                  className="absolute top-2 left-2 bg-white/80 hover:bg-white text-primary opacity-0 group-hover:opacity-100 transition-opacity"
-                  onClick={() => handleProductClick(product)}
-                >
-                  <Eye className="h-4 w-4" />
-                </Button>
               </div>
+            </div>
 
-              <CardContent className="p-3 md:p-4">
-                <h3 className="font-semibold mb-2 line-clamp-2 text-sm md:text-base cursor-pointer hover:text-primary" 
-                    onClick={() => handleProductClick(product)}>
-                  {product.name}
-                </h3>
-                
+            {/* Product Info Section */}
+            <div className="space-y-6">
+              <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                  {product.sku && (
+                    <Badge variant="outline" className="text-sm">
+                      SKU: {product.sku}
+                    </Badge>
+                  )}
+                  <Badge variant="secondary" className="text-sm">
+                    {getPriceLabel()}
+                  </Badge>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="text-3xl font-bold text-primary">
+                    R$ {getPrice().toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                  </div>
+                </div>
+
                 {product.description && (
-                  <div className="mb-3 hidden md:block">
-                    <p className={`text-xs md:text-sm text-muted-foreground ${expandedDescriptions.has(product.id) ? '' : 'line-clamp-3'}`}>
+                  <div className="space-y-2">
+                    <h3 className="font-semibold text-foreground">Descrição</h3>
+                    <p className="text-muted-foreground leading-relaxed">
                       {product.description}
                     </p>
-                    {product.description.length > 150 && (
-                      <button
-                        onClick={() => toggleDescription(product.id)}
-                        className="text-xs text-primary hover:underline mt-1 flex items-center gap-1"
-                      >
-                        {expandedDescriptions.has(product.id) ? 'Ver menos' : 'Ver mais'}
-                        <ChevronDown className={`h-3 w-3 transition-transform ${expandedDescriptions.has(product.id) ? 'rotate-180' : ''}`} />
-                      </button>
-                    )}
                   </div>
                 )}
 
-                <div className="mb-3 md:mb-4">
-                  <div className="text-sm sm:text-xl font-bold text-primary">
-                    R$ {(profile?.setor === 'revenda' ? product.price_revenda : product.price_varejo)?.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) || '0,00'}
+                <div className="space-y-2">
+                  <h3 className="font-semibold text-foreground">Informações do Produto</h3>
+                  <div className="space-y-1 text-sm text-muted-foreground">
+                    <div>Categoria: {product.categories && product.categories.name ? product.categories.name : 'Não especificada'}</div>
+                    {product.sku && <div>Código: {product.sku}</div>}
                   </div>
-                  
-                  {profile?.setor === 'revenda' && (
-                    <div className="text-xs text-green-600 font-medium">
-                      Preço Revenda
-                    </div>
-                  )}
                 </div>
+              </div>
 
+              <div className="space-y-3">
                 <Button 
-                  className="bg-gradient-primary hover:opacity-90 font-medium w-full h-7 sm:h-10 text-xs sm:text-sm"
-                  onClick={() => handleWhatsAppContact(product)}
+                  className="w-full bg-gradient-primary hover:opacity-90 font-semibold"
+                  onClick={handleWhatsAppContact}
                 >
-                  <ShoppingCart className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
-                  Consultar
+                  <ShoppingCart className="h-4 w-4 mr-2" />
+                  Consultar Preço
                 </Button>
-              </CardContent>
-            </Card>
-          ))}
+              
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Image Zoom Modal */}
+      {imageZoom && (
+        <div 
+          className="fixed inset-0 z-[9999] bg-black/95 flex items-center justify-center p-4"
+          onClick={toggleImageZoom}
+        >
+          <div className="relative max-w-[90vw] max-h-[90vh] overflow-hidden">
+            <div className="absolute top-4 right-4 z-10 flex gap-2">
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleZoomOut();
+                }}
+                disabled={zoomLevel <= 1}
+                className="bg-white/90 hover:bg-white text-black"
+              >
+                <ZoomOut className="h-4 w-4" />
+              </Button>
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleZoomIn();
+                }}
+                disabled={zoomLevel >= 3}
+                className="bg-white/90 hover:bg-white text-black"
+              >
+                <ZoomIn className="h-4 w-4" />
+              </Button>
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleImageZoom();
+                }}
+                className="bg-white/90 hover:bg-white text-black"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+            <div className="relative overflow-auto max-h-[90vh] max-w-[90vw] flex items-center justify-center">
+              <img
+                src={product.image_url || 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&h=800&fit=crop'}
+                alt={product.name}
+                className="transition-transform duration-200 cursor-move"
+                style={{ 
+                  transform: `scale(${zoomLevel})`,
+                  transformOrigin: 'center',
+                  maxWidth: 'none',
+                  maxHeight: 'none'
+                }}
+                onClick={(e) => e.stopPropagation()}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  handleZoomIn();
+                }}
+              />
+            </div>
+          </div>
         </div>
       )}
-
-      <ProductDetail 
-        product={selectedProduct}
-        isOpen={isDetailOpen}
-        onClose={closeProductDetail}
-      />
-    </div>
+    </>
   );
 };
 
-export default ProductList;
+export default ProductDetail;
