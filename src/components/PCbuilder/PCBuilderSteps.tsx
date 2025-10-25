@@ -19,7 +19,6 @@ const PC_STEPS = [
   { id: 'monitor', name: 'Monitor', category: 'monitores' },
   { id: 'mousepad', name: 'Mouse Pad', category: 'mousepads' }
 ];
-
 interface PCBuilderStepsProps {
   currentStep: number;
   onStepChange: (step: number) => void;
