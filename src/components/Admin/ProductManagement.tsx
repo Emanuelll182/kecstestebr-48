@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2 } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -21,10 +21,12 @@ interface Product {
   image_url?: string;
   sku?: string;
   category_id?: string;
+  is_active?: boolean;
   category?: {
     name: string;
   };
 }
+
 
 interface Category {
   id: string;
@@ -180,6 +182,32 @@ const ProductManagement = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleToggleActive = async (id: string, currentStatus: boolean) => {
+    try {
+      const { error } = await supabase
+        .from('products')
+        .update({ is_active: !currentStatus })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      toast({
+        title: !currentStatus ? "Produto ativado!" : "Produto desativado!",
+        description: !currentStatus 
+          ? "O produto agora está visível para os clientes."
+          : "O produto foi ocultado dos clientes.",
+      });
+      fetchProducts();
+      handleSearch(searchTerm);
+    } catch (error: any) {
+      toast({
+        title: "Erro",
+        description: error.message || "Ocorreu um erro ao atualizar o status do produto.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -352,6 +380,7 @@ const ProductManagement = () => {
               <TableHead>Categoria</TableHead>
               <TableHead>Preço Varejo</TableHead>
               <TableHead>Preço Revenda</TableHead>
+              <TableHead>Status</TableHead>
               <TableHead>Ações</TableHead>
             </TableRow>
           </TableHeader>
@@ -364,7 +393,20 @@ const ProductManagement = () => {
                 <TableCell>R$ {product.price_varejo.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</TableCell>
                 <TableCell>R$ {product.price_revenda.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</TableCell>
                 <TableCell>
+                  <span className={`text-sm ${product.is_active !== false ? 'text-green-600' : 'text-muted-foreground'}`}>
+                    {product.is_active !== false ? 'Ativo' : 'Inativo'}
+                  </span>
+                </TableCell>
+                <TableCell>
                   <div className="flex gap-2">
+                    <Button
+                      variant={product.is_active !== false ? "outline" : "default"}
+                      size="icon"
+                      onClick={() => handleToggleActive(product.id, product.is_active !== false)}
+                      title={product.is_active !== false ? "Desativar produto" : "Ativar produto"}
+                    >
+                      {product.is_active !== false ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </Button>
                     <Button
                       variant="outline"
                       size="icon"
