@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { MessageCircle, ShoppingCart, Eye, ChevronDown } from 'lucide-react';
 import ProductDetail from '@/components/ProductDetail';
-
+import { useStoreCredentials } from '@/hooks/useStoreCredentials';
 
 interface Product {
   id: string;
@@ -16,6 +16,10 @@ interface Product {
   price_revenda: number;
   image_url?: string;
   sku?: string;
+  categories?: {
+    name: string;
+    slug: string;
+  };
 }
 
 interface ProductListProps {
@@ -30,6 +34,7 @@ const ProductList = ({ searchTerm, selectedCategory }: ProductListProps) => {
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [expandedDescriptions, setExpandedDescriptions] = useState<Set<string>>(new Set());
   const { profile } = useAuth();
+  const { redirectToWhatsApp, currentSector } = useStoreCredentials();
 
   const toggleDescription = (productId: string) => {
     setExpandedDescriptions(prev => {
@@ -113,11 +118,9 @@ const ProductList = ({ searchTerm, selectedCategory }: ProductListProps) => {
     setLoading(false);
   };
 
-  const handleWhatsAppContact = () => {
-    const phoneNumber = '5511999999999';
-    const message = 'Olá! Gostaria de saber mais sobre os produtos da KECINFORSTORE.';
-    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
+  const handleWhatsAppContact = (product: Product) => {
+    const message = `Olá! Gostaria de saber mais sobre o produto: ${product.name} (SKU: ${product.sku || 'N/A'})`;
+    redirectToWhatsApp(message);
   };
 
   const handleProductClick = (product: Product) => {
@@ -158,7 +161,7 @@ const ProductList = ({ searchTerm, selectedCategory }: ProductListProps) => {
           Produtos ({products.length})
         </h2>
         <Button
-          onClick={handleWhatsAppContact}
+          onClick={() => handleWhatsAppContact(products[0])}
           className="bg-green-500 hover:bg-green-600 text-white"
         >
           <MessageCircle className="h-4 w-4 mr-2" />
@@ -232,7 +235,7 @@ const ProductList = ({ searchTerm, selectedCategory }: ProductListProps) => {
 
                 <Button 
                   className="bg-gradient-primary hover:opacity-90 font-medium w-full h-7 sm:h-10 text-xs sm:text-sm"
-                  onClick={handleWhatsAppContact}
+                  onClick={() => handleWhatsAppContact(product)}
                 >
                   <ShoppingCart className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
                   Consultar
