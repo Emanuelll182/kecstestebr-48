@@ -57,15 +57,17 @@ const ProductList = ({ searchTerm, selectedCategory }: ProductListProps) => {
     console.log('🔍 Filters - Search:', searchTerm, 'Category:', selectedCategory);
     setLoading(true);
     
+    
     try {
       let query = supabase
         .from('products')
         .select(`
           *,
           categories!inner(name, slug)
-        `)
+        `)  
+        .eq('is_active', true)
         .order('created_at', { ascending: false });
-
+        
       // Apply category filter
       if (selectedCategory && selectedCategory !== 'all') {
         query = query.eq('categories.slug', selectedCategory);
