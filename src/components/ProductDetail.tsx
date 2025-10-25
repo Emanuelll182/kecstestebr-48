@@ -151,15 +151,7 @@ const ProductDetail = ({ product, isOpen, onClose }: ProductDetailProps) => {
                   <ShoppingCart className="h-4 w-4 mr-2" />
                   Consultar Preço
                 </Button>
-                
-                <Button
-                  variant="outline"
-                  className="w-full bg-green-500 hover:bg-green-600 text-white border-green-500"
-                  onClick={handleWhatsAppContact}
-                >
-                  <MessageCircle className="h-4 w-4 mr-2" />
-                  WhatsApp Vendas
-                </Button>
+              
               </div>
             </div>
           </div>
