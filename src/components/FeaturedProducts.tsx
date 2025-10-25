@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Star, Heart, Eye, MessageCircle, ChevronLeft, ChevronRight } from "lucide-react";
+import { Star, Heart, Eye, MessageCircle, ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import { supabasePublic as supabase } from '@/integrations/supabase/publicClient';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -23,7 +23,20 @@ const FeaturedProducts = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [visibleProducts, setVisibleProducts] = useState(5);
+  const [expandedDescriptions, setExpandedDescriptions] = useState<Set<string>>(new Set());
   const { profile } = useAuth();
+
+  const toggleDescription = (productId: string) => {
+    setExpandedDescriptions(prev => {
+      const next = new Set(prev);
+      if (next.has(productId)) {
+        next.delete(productId);
+      } else {
+        next.add(productId);
+      }
+      return next;
+    });
+  };
 
   useEffect(() => {
     fetchFeaturedProducts();
@@ -186,9 +199,21 @@ const FeaturedProducts = () => {
                   </h3>
                   
                   {product.description && (
-                    <p className="text-xs text-muted-foreground mb-2 line-clamp-1 sm:line-clamp-2 hidden sm:block">
+                    <div
+                     className="mb-3 hidden md:block">
+                    <p className={`text-xs md:text-sm text-muted-foreground ${expandedDescriptions.has(product.id) ? '' : 'line-clamp-3'}`}>
                       {product.description}
                     </p>
+                    {product.description.length > 150 && (
+                      <button
+                        onClick={() => toggleDescription(product.id)}
+                        className="text-xs text-primary hover:underline mt-1 flex items-center gap-1"
+                      >
+                        {expandedDescriptions.has(product.id) ? 'Ver menos' : 'Ver mais'}
+                        <ChevronDown className={`h-3 w-3 transition-transform ${expandedDescriptions.has(product.id) ? 'rotate-180' : ''}`} />
+                      </button>
+                    )}
+                   </div>
                   )}
                 </div>
 
