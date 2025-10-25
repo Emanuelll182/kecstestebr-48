@@ -14,12 +14,11 @@ interface Product {
   price_revenda: number;
   image_url?: string;
   sku?: string;
-  category?: {
+  categories?: {
     name: string;
     slug: string;
   };
 }
-
 interface ProductDetailProps {
   product: Product | null;
   isOpen: boolean;
@@ -98,9 +97,9 @@ const ProductDetail = ({ product, isOpen, onClose }: ProductDetailProps) => {
                     <ZoomIn className="h-4 w-4" />
                   </Button>
                 </div>
-                {product.category && (
+                {product.categories && (
                   <Badge className="absolute top-3 left-3 bg-primary text-primary-foreground">
-                    {product.category.name}
+                    {product.categories.name}
                   </Badge>
                 )}
               </div>
@@ -138,7 +137,7 @@ const ProductDetail = ({ product, isOpen, onClose }: ProductDetailProps) => {
                 <div className="space-y-2">
                   <h3 className="font-semibold text-foreground">Informações do Produto</h3>
                   <div className="space-y-1 text-sm text-muted-foreground">
-                    <div>Categoria: {product.category?.name || 'Não especificada'}</div>
+                    <div>Categoria: {product.categories && product.categories.name ? product.categories.name : 'Não especificada'}</div>
                     {product.sku && <div>Código: {product.sku}</div>}
                   </div>
                 </div>
