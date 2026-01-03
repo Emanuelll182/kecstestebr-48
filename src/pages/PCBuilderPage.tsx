@@ -167,7 +167,7 @@ const PcBuilderPage = () => {
     ).join('\n');
     
     const message = `Olá! Gostaria de montar um PC com os seguintes componentes:\n\n${componentsList}\n\nPoderia me ajudar com um orçamento?`;
-    const whatsappUrl = `https://wa.me/5511999999999?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = `https://wa.me/5585989040000?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
 
