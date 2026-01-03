@@ -81,7 +81,7 @@ const FeaturedProducts = () => {
   };
 
   const handleWhatsAppContact = (product?: Product) => {
-    const phoneNumber = '558534833373';
+    const phoneNumber = '5585989040000';
     const message = product 
       ? `Olá! Gostaria de saber mais sobre o produto: ${product.name} (SKU: ${product.sku})`
       : 'Olá! Gostaria de saber mais sobre os produtos da KECINFORSTORE.';
