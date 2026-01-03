@@ -92,7 +92,7 @@ ${product.sku ? `SKU: ${product.sku}` : ''}
 
 Gostaria de mais informações!`;
 
-    const whatsappUrl = `https://wa.me/558534833373?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = `https://wa.me/5585989040000?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
 
