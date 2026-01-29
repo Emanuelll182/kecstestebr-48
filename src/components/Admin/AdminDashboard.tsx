@@ -8,6 +8,7 @@ import ProductManagement from './ProductManagement';
 import BannerManagement from './BannerManagement';
 import CategoryManagement from './CategoryManagement';
 import ClientManagement from './ClientManagement';
+import UserManagement from './UserManagement';
 import FeaturedProductsManagement from './FeaturedProductsManagement';
 import StoreCredentialsManagement from './StoreCredentialsManagement';
 import ReadyPcManagement from './ReadyPcManagement';
@@ -123,6 +124,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBack }) => {
 
           <TabsContent value="credentials">
             <StoreCredentialsManagement />
+          </TabsContent>
+
+          <TabsContent value="users">
+            <UserManagement />
           </TabsContent>
           
           <TabsContent value="credentials">
