@@ -91,7 +91,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBack }) => {
               <Users className="h-4 w-4" />
               Clientes
             </TabsTrigger>
-            
+            <TabsTrigger value="users" className="flex items-center gap-2">
+              <Users className="h-4 w-4" />
+              Usuários
+            </TabsTrigger>
             <TabsTrigger value="credentials" className="flex items-center gap-2">
               <Settings className="h-4 w-4" />
               Credenciais
