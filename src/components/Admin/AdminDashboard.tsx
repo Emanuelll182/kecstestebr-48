@@ -1,7 +1,19 @@
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { LogOut, Package, Image, Tags, Users, Star, Settings, Computer } from 'lucide-react';
+import { 
+  LogOut, 
+  Package, 
+  Image, 
+  Tags, 
+  Users, 
+  Star, 
+  Settings, 
+  Computer,
+  ShoppingBag,
+  Paintbrush,
+  Shield
+} from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import ProductManagement from './ProductManagement';
@@ -24,7 +36,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBack }) => {
 
   const handleSignOut = async () => {
     const result = await signOut();
-    
     if (result.success) {
       toast({
         title: "Logout realizado",
@@ -41,104 +52,176 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBack }) => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="bg-card border-b px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              KECINFORSTORE - Admin
-            </h1>
-            <p className="text-muted-foreground">
-              Olá, {profile?.email}
-            </p>
-          </div>
-          <div className="flex items-center gap-4">
-            <Button variant="outline" onClick={onBack}>
-              Voltar ao Site
-            </Button>
-            <Button variant="destructive" onClick={handleSignOut}>
-              <LogOut className="h-4 w-4 mr-2" />
-              Sair
-            </Button>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+      {/* Header */}
+      <header className="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <Shield className="h-8 w-8 text-blue-600" />
+                <div>
+                  <h1 className="text-xl font-bold text-slate-900">KECINFORSTORE</h1>
+                  <p className="text-xs text-slate-500">Painel Administrativo</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex items-center space-x-4">
+              <div className="text-right hidden sm:block">
+                <p className="text-sm font-medium text-slate-900">Olá, Admin</p>
+                <p className="text-xs text-slate-500">{profile?.email}</p>
+              </div>
+              
+              <div className="flex space-x-2">
+                <Button
+                  onClick={onBack}
+                  variant="outline"
+                  size="sm"
+                  className="hidden sm:flex"
+                >
+                  Voltar ao Site
+                </Button>
+                <Button
+                  onClick={handleSignOut}
+                  variant="destructive"
+                  size="sm"
+                  className="flex items-center space-x-2"
+                >
+                  <LogOut className="h-4 w-4" />
+                  <span className="hidden sm:inline">Sair</span>
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </header>
 
-      <div className="container mx-auto p-6">
-        <Tabs defaultValue="products" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-7">
-            <TabsTrigger value="products" className="flex items-center gap-2">
-              <Package className="h-4 w-4" />
-              Produtos
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Tabs defaultValue="produtos" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-3 lg:grid-cols-9 gap-2 bg-white p-2 rounded-lg shadow-sm h-auto">
+            {/* Seção: Catálogo */}
+            <TabsTrigger 
+              value="produtos" 
+              className="flex flex-col items-center justify-center p-3 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"
+            >
+              <Package className="h-5 w-5 mb-1" />
+              <span className="text-xs font-medium">Produtos</span>
             </TabsTrigger>
-            <TabsTrigger value="featured" className="flex items-center gap-2">
-              <Star className="h-4 w-4" />
-              Destaques
+            
+            <TabsTrigger 
+              value="categorias" 
+              className="flex flex-col items-center justify-center p-3 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"
+            >
+              <Tags className="h-5 w-5 mb-1" />
+              <span className="text-xs font-medium">Categorias</span>
             </TabsTrigger>
-            <TabsTrigger value="ready-pcs" className="flex items-center gap-2">
-              <Computer className="h-4 w-4" />
-              PCs Prontos
+            
+            <TabsTrigger 
+              value="destaques" 
+              className="flex flex-col items-center justify-center p-3 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"
+            >
+              <Star className="h-5 w-5 mb-1" />
+              <span className="text-xs font-medium">Destaques</span>
             </TabsTrigger>
-            <TabsTrigger value="banners" className="flex items-center gap-2">
-              <Image className="h-4 w-4" />
-              Banners
+            
+            <TabsTrigger 
+              value="pcs-prontos" 
+              className="flex flex-col items-center justify-center p-3 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"
+            >
+              <Computer className="h-5 w-5 mb-1" />
+              <span className="text-xs font-medium">PCs Prontos</span>
             </TabsTrigger>
-            <TabsTrigger value="categories" className="flex items-center gap-2">
-              <Tags className="h-4 w-4" />
-              Categorias
+
+            {/* Seção: Aparência */}
+            <TabsTrigger 
+              value="banners" 
+              className="flex flex-col items-center justify-center p-3 data-[state=active]:bg-purple-50 data-[state=active]:text-purple-700"
+            >
+              <Image className="h-5 w-5 mb-1" />
+              <span className="text-xs font-medium">Banners</span>
             </TabsTrigger>
-            <TabsTrigger value="clients" className="flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              Clientes
+
+            {/* Seção: Usuários */}
+            <TabsTrigger 
+              value="clientes" 
+              className="flex flex-col items-center justify-center p-3 data-[state=active]:bg-green-50 data-[state=active]:text-green-700"
+            >
+              <ShoppingBag className="h-5 w-5 mb-1" />
+              <span className="text-xs font-medium">Clientes</span>
             </TabsTrigger>
-            <TabsTrigger value="users" className="flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              Usuários
+            
+            <TabsTrigger 
+              value="usuarios" 
+              className="flex flex-col items-center justify-center p-3 data-[state=active]:bg-green-50 data-[state=active]:text-green-700"
+            >
+              <Users className="h-5 w-5 mb-1" />
+              <span className="text-xs font-medium">Usuários</span>
             </TabsTrigger>
-            <TabsTrigger value="credentials" className="flex items-center gap-2">
-              <Settings className="h-4 w-4" />
-              Credenciais
+
+            {/* Seção: Configurações */}
+            <TabsTrigger 
+              value="credenciais" 
+              className="flex flex-col items-center justify-center p-3 data-[state=active]:bg-orange-50 data-[state=active]:text-orange-700"
+            >
+              <Shield className="h-5 w-5 mb-1" />
+              <span className="text-xs font-medium">Credenciais</span>
+            </TabsTrigger>
+            
+            <TabsTrigger 
+              value="configuracoes" 
+              className="flex flex-col items-center justify-center p-3 data-[state=active]:bg-orange-50 data-[state=active]:text-orange-700"
+            >
+              <Settings className="h-5 w-5 mb-1" />
+              <span className="text-xs font-medium">Loja</span>
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="products">
-            <ProductManagement />
-          </TabsContent>
+          {/* Tab Contents */}
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            {/* Catálogo */}
+            <TabsContent value="produtos" className="mt-0">
+              <ProductManagement />
+            </TabsContent>
 
-          <TabsContent value="featured">
-            <FeaturedProductsManagement />
-          </TabsContent>
+            <TabsContent value="categorias" className="mt-0">
+              <CategoryManagement />
+            </TabsContent>
 
-          <TabsContent value="ready-pcs">
-            <ReadyPcManagement />
-          </TabsContent>
+            <TabsContent value="destaques" className="mt-0">
+              <FeaturedProductsManagement />
+            </TabsContent>
 
-          <TabsContent value="banners">
-            <BannerManagement />
-          </TabsContent>
+            <TabsContent value="pcs-prontos" className="mt-0">
+              <ReadyPcManagement />
+            </TabsContent>
 
-          <TabsContent value="categories">
-            <CategoryManagement />
-          </TabsContent>
+            {/* Aparência */}
+            <TabsContent value="banners" className="mt-0">
+              <BannerManagement />
+            </TabsContent>
 
-          <TabsContent value="clients">
-            <ClientManagement />
-          </TabsContent>
+            {/* Usuários */}
+            <TabsContent value="clientes" className="mt-0">
+              <ClientManagement />
+            </TabsContent>
 
-          <TabsContent value="credentials">
-            <StoreCredentialsManagement />
-          </TabsContent>
+            <TabsContent value="usuarios" className="mt-0">
+              <UserManagement />
+            </TabsContent>
 
-          <TabsContent value="users">
-            <UserManagement />
-          </TabsContent>
-          
-          <TabsContent value="credentials">
-            <StoreSettingsManagement />
-          </TabsContent>
+            {/* Configurações */}
+            <TabsContent value="credenciais" className="mt-0">
+              <StoreCredentialsManagement />
+            </TabsContent>
 
+            <TabsContent value="configuracoes" className="mt-0">
+              <StoreSettingsManagement />
+            </TabsContent>
+          </div>
         </Tabs>
-      </div>
+      </main>
     </div>
   );
 };
